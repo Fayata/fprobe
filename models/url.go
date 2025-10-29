@@ -19,15 +19,13 @@ type TargetURL struct {
 	TotalLatencySum int64
 }
 
-// ProbeHistory menyimpan satu titik data historis untuk grafik
 type ProbeHistory struct {
 	URLID     int
-	URL       string // <-- TAMBAHAN: Untuk menampilkan nama URL di riwayat
+	URL       string 
 	LatencyMs int64
 	Timestamp time.Time
 }
 
-// PageData adalah struct untuk passing data ke semua template HTML
 type PageData struct {
 	Page             string
 	URLs             []TargetURL
@@ -39,8 +37,6 @@ type PageData struct {
 }
 
 // === FUNGSI HELPER UNTUK TEMPLATE ===
-
-// GetUptime menghitung durasi uptime yang mudah dibaca
 func (tu *TargetURL) GetUptime() string {
 	if !tu.FirstUpTime.Valid {
 		return "N/A"

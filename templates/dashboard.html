@@ -1,11 +1,9 @@
-{{define "layout"}}
-    {{template "layout" .}}
-{{end}}
 {{define "title"}}Dashboard{{end}}
+
 {{define "head"}}{{end}}
+
 {{define "content"}}
 
-<!-- 1. STATS GRID (YANG HILANG) -->
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-label">
@@ -14,9 +12,9 @@
             </svg>
             Total Uptime
         </div>
-        <!-- Kita akan buat ini dinamis nanti, untuk sekarang statis -->
         <div class="stat-value">99.9%</div>
     </div>
+    
     <div class="stat-card">
         <div class="stat-label">
             <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
@@ -24,9 +22,9 @@
             </svg>
             Active URLs
         </div>
-        <!-- Menghitung jumlah URL yang ada di data -->
         <div class="stat-value">{{len .URLs}}</div>
     </div>
+    
     <div class="stat-card">
         <div class="stat-label">
             <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
@@ -34,116 +32,41 @@
             </svg>
             Avg Response
         </div>
-        <!-- Mengambil rata-rata global -->
-        <div class="stat-value">{{.GlobalAvgLatency}} ms</div>
+        <div class="stat-value">{{if .GlobalAvgLatency}}{{.GlobalAvgLatency}} ms{{else}}N/A{{end}}</div>
     </div>
 </div>
 
-<!-- 2. KARTU GRAFIK DINAMIS -->
 <div class="card">
     <h2 class="card-title">
         <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.29-6.29L22 12V6h-6z"></path>
+            <path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/>
         </svg>
-        Latency History (Last 30 Probes)
+        Grafik Response Time (30 Hari Terakhir)
     </h2>
     
-    <!-- Dropdown untuk memilih URL -->
-    <form action="/" method="GET" class="input-group" style="margin-bottom: 20px;">
+    <form action="/" method="GET" class="input-group">
         <select name="url_id" onchange="this.form.submit()">
             {{if not .URLs}}
                 <option>Belum ada URL untuk ditampilkan</option>
             {{else}}
                 {{range .URLs}}
-                    <!-- Tandai 'selected' jika ID-nya cocok dengan yang kita pilih -->
                     <option value="{{.ID}}" {{if eq .ID $.SelectedURLID}}selected{{end}}>
                         {{.URL}}
                     </option>
                 {{end}}
             {{end}}
         </select>
-        <button type="submit" class="btn">Tampilkan</button>
+        <button type="submit" class="btn">
+            <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+            </svg>
+            Tampilkan
+        </button>
     </form>
 
-    <!-- Canvas untuk Chart.js -->
-    <div>
+    <div class="chart-container">
         <canvas id="latencyChart"></canvas>
     </div>
 </div>
 
-<!-- JavaScript untuk menggambar grafik -->
-<script>
-    // 1. Ambil data history dari Go (dikonversi ke JS)
-    // {{.HistoryData | js}} adalah cara aman mengubah data Go ke JS
-    const historyData = {HistoryData };
-
-    // 2. Siapkan data untuk Chart.js
-    const labels = historyData.map(d => {
-        // Format waktu agar lebih mudah dibaca (misal: 14:05:10)
-        return new Date(d.Timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    }).reverse(); // Balik array agar waktu terbaru ada di kanan
-
-    const latencyValues = historyData.map(d => d.LatencyMs).reverse();
-
-    // 3. Konfigurasi Chart
-    const config = {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Latency (ms)',
-                data: latencyValues,
-                fill: true,
-                backgroundColor: 'rgba(198, 40, 40, 0.2)',
-                borderColor: '#c62828',
-                tension: 0.1, // Membuat garis sedikit melengkung
-                pointBackgroundColor: '#c62828',
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: '#a0a0a0', // Warna teks sumbu Y
-                        callback: function(value, index, values) {
-                            return value + ' ms';
-                        }
-                    },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)' // Warna garis grid
-                    }
-                },
-                x: {
-                    ticks: {
-                        color: '#a0a0a0' // Warna teks sumbu X
-                    },
-                    grid: {
-                        display: false // Sembunyikan grid vertikal
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false // Sembunyikan legenda
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return 'Latency: ' + context.parsed.y + ' ms';
-                        }
-                    }
-                }
-            }
-        }
-    };
-
-    // 4. Render Chart
-    const ctx = document.getElementById('latencyChart').getContext('2d');
-    new Chart(ctx, config);
-</script>
-
 {{end}}
-

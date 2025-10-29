@@ -4,42 +4,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Judul akan diambil dari template anak (misal: dashboard.html) -->
     <title>ID Probe - {{template "title" .}}</title>
     <link rel="stylesheet" href="/static/style.css">
-    
-    <!-- Chart.js dipindahkan ke sini agar bisa diakses semua halaman jika perlu -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Blok "head" ini akan diisi oleh template anak -->
+    <script src="/static/chart.js"></script>
     {{template "head" .}}
 </head>
 <body>
     
     <div class="sidebar">
         <div class="logo">
-            <img src="/static/logo.png" alt="Logo" class="logo-image">
-            <h1>ID Probe</h1>
+            <div class="logo-image">
+                <img src="/static/logo.png" alt="Awan Teknologi Inovasi">
+            </div>
+            <h1>ID Probe Status</h1>
             <p>Monitoring System</p>
         </div>
 
         <ul class="menu">
-            <!-- Navigasi menjadi dinamis berdasarkan data .Page dari handler -->
             <li class="menu-item">
                 <a href="/" class="menu-link {{if eq .Page "dashboard"}}active{{end}}">
-                    <svg class="icon" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                    <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    </svg>
                     Dashboard
                 </a>
             </li>
             <li class="menu-item">
                 <a href="/urls" class="menu-link {{if eq .Page "urls"}}active{{end}}">
-                    <svg class="icon" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                    <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                    </svg>
                     Target URL
                 </a>
             </li>
             <li class="menu-item">
                 <a href="/scheduler" class="menu-link {{if eq .Page "scheduler"}}active{{end}}">
-                    <svg class="icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                    <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                    </svg>
                     Scheduler
                 </a>
             </li>
@@ -48,13 +51,11 @@
 
     <div class="main-content">
         <div class="header-bar">
-             <!-- Judul di header juga diambil dari template anak -->
             <h2>{{template "title" .}}</h2>
-            <div style="color: #a0a0a0; font-size: 0.9em;">
-                <svg class="icon" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 6px;">
+            <div class="last-update">
+                <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
                 </svg>
-                 <!-- Data "LastCheckedTime" yang dinamis -->
                 {{if not .LastCheckedTime.IsZero}}
                     Last update: {{.LastCheckedTime.Format "02 Jan 15:04:05"}}
                 {{else}}
@@ -63,12 +64,18 @@
             </div>
         </div>
 
-        <!-- Konten utama akan di-render di sini -->
         {{template "content" .}}
-
     </div>
+
+    {{if eq .Page "dashboard"}}
+    <script>
+        const historyData = JSON.parse('{{.HistoryData | js}}');
+        if (historyData && historyData.length > 0) {
+            initChart(historyData);
+        }
+    </script>
+    {{end}}
 
 </body>
 </html>
 {{end}}
-

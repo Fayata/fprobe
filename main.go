@@ -4,24 +4,29 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"test/database" // Sesuaikan 'test' dengan nama modul Anda
-	"test/handler"  // Sesuaikan 'test'
-	"test/scheduler" // Sesuaikan 'test'
+	"test/database"
+	"test/handler"
+	"test/scheduler"
 
 	"github.com/gorilla/mux"
 )
 
-// main adalah titik masuk aplikasi.
 func main() {
 	// 1. Inisialisasi Database
 	store := database.NewStore("probe.db")
 	log.Println("Database terhubung dan tabel siap.")
 
-	// 2. Muat SEMUA Template HTML
-	// Inilah perbaikannya. ParseGlob memuat semua file .html di folder templates.
+	// 2. Muat SEMUA Template HTML dengan ParseGlob
+	// PENTING: Hapus file templates/index.html jika masih ada!
 	tpl, err := template.ParseGlob("templates/*.html")
 	if err != nil {
 		log.Fatalf("Gagal memuat template (ParseGlob): %v", err)
+	}
+
+	// Debug: Print template names yang berhasil dimuat
+	log.Println("Templates yang dimuat:")
+	for _, t := range tpl.Templates() {
+		log.Printf("  - %s", t.Name())
 	}
 
 	// 3. Ambil interval awal dari DB
@@ -39,7 +44,7 @@ func main() {
 	// 5. Mulai Scheduler dan simpan state-nya ke 'app'
 	app.Scheduler, app.JobID = scheduler.StartScheduler(initialInterval, app.Store)
 
-	// 6. Setup Handlers (kirim 'app' ke handlers)
+	// 6. Setup Handlers
 	h := handler.NewHandlers(app)
 	r := mux.NewRouter()
 
@@ -59,7 +64,6 @@ func main() {
 
 	// 7. Jalankan Web Server
 	port := ":8080"
-	log.Printf("Server Merah Putih berjalan di http://localhost%s\n", port)
+	log.Printf("Server berjalan di http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, r))
 }
-

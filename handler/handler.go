@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"test/database" // PERBAIKAN: Dihapus 'internal/'
-	"test/models"    // PERBAIKAN: Dihapus 'internal/'
-	"test/scheduler" // PERBAIKAN: Dihapus 'internal/'
+	"test/database"
+	"test/models"
+	"test/scheduler"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -37,8 +37,7 @@ func NewHandlers(app *Application) *Handlers {
 
 // DashboardPage menangani halaman utama ('/')
 func (h *Handlers) DashboardPage(w http.ResponseWriter, r *http.Request) {
-	// PERBAIKAN: Mencegah error 'superfluous response.WriteHeader'
-	// Hanya proses request untuk path root '/'
+	// HANYA proses request untuk path root '/'
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
@@ -54,7 +53,7 @@ func (h *Handlers) DashboardPage(w http.ResponseWriter, r *http.Request) {
 
 	// 2. Ambil URL yang dipilih dari query param
 	selectedURLIDStr := r.URL.Query().Get("url_id")
-	selectedID, _ := strconv.Atoi(selectedURLIDStr) // Konversi ke int
+	selectedID, _ := strconv.Atoi(selectedURLIDStr)
 
 	// Jika tidak ada ID, atau ID tidak valid, pakai ID pertama dari daftar
 	if selectedID == 0 && len(urls) > 0 {
@@ -63,8 +62,8 @@ func (h *Handlers) DashboardPage(w http.ResponseWriter, r *http.Request) {
 
 	// 3. Ambil data history probe (untuk chart)
 	var historyData []models.ProbeHistory
-	if selectedID > 0 { // Hanya ambil jika ada ID yang valid
-		historyData, err = h.App.Store.GetProbeHistory(selectedID, 30) // Ambil history untuk ID yang dipilih
+	if selectedID > 0 {
+		historyData, err = h.App.Store.GetProbeHistory(selectedID, 30)
 		if err != nil {
 			log.Printf("Gagal mengambil data history: %v", err)
 		}
@@ -77,15 +76,15 @@ func (h *Handlers) DashboardPage(w http.ResponseWriter, r *http.Request) {
 		GlobalAvgLatency: calculateGlobalAvgLatency(urls),
 		LastCheckedTime:  getLatestProbeTime(urls),
 		HistoryData:      historyData,
-		SelectedURLID:    selectedID, // Kirim ID yang dipilih ke template
+		SelectedURLID:    selectedID,
 	}
 
-	// 5. Render template
-	// 5. Render template
+	// 5. Render template DASHBOARD
 	err = h.App.Templates.ExecuteTemplate(w, "layout", data)
 	if err != nil {
-    	log.Printf("Error rendering template: %v", err)
-    	return
+		log.Printf("Error rendering dashboard template: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -104,8 +103,10 @@ func (h *Handlers) URLsPage(w http.ResponseWriter, r *http.Request) {
 		LastCheckedTime: getLatestProbeTime(urls),
 	}
 
+	// Render template URLS
 	err = h.App.Templates.ExecuteTemplate(w, "layout", data)
 	if err != nil {
+		log.Printf("Error rendering urls template: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -119,25 +120,28 @@ func (h *Handlers) SchedulerPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Gagal mengambil data", http.StatusInternalServerError)
 		return
 	}
+
+	// 2. Ambil semua URL untuk last checked time
 	urls, _ := h.App.Store.GetAllURLs()
 
-	// 2. AMBIL RIWAYAT PROBE TERBARU (FITUR BARU)
-	historyData, err := h.App.Store.GetAllProbeHistory(50) // Ambil 50 log terakhir
+	// 3. Ambil riwayat probe terbaru
+	historyData, err := h.App.Store.GetAllProbeHistory(50)
 	if err != nil {
 		log.Printf("Gagal mengambil semua history: %v", err)
 	}
 
-	// 3. Siapkan PageData
+	// 4. Siapkan PageData
 	data := models.PageData{
 		Page:            "scheduler",
 		CurrentInterval: interval,
 		LastCheckedTime: getLatestProbeTime(urls),
-		HistoryData:     historyData, // Kirim data riwayat ke template
+		HistoryData:     historyData,
 	}
 
-	// 4. Render template
+	// 5. Render template SCHEDULER
 	err = h.App.Templates.ExecuteTemplate(w, "layout", data)
 	if err != nil {
+		log.Printf("Error rendering scheduler template: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -213,12 +217,12 @@ func (h *Handlers) UpdateSettings(w http.ResponseWriter, r *http.Request) {
 
 	// Restart Cron Job
 	log.Printf("Mengubah jadwal scheduler ke: %s", interval)
-	h.App.Scheduler.Remove(h.App.JobID) // Hapus job lama
-	newID, err := h.App.Scheduler.AddFunc(interval, scheduler.CreateJob(h.App.Store)) // Buat job baru
+	h.App.Scheduler.Remove(h.App.JobID)
+	newID, err := h.App.Scheduler.AddFunc(interval, scheduler.CreateJob(h.App.Store))
 	if err != nil {
 		log.Println("Gagal menambah job cron baru:", err)
 	}
-	h.App.JobID = newID // Simpan ID job baru
+	h.App.JobID = newID
 
 	http.Redirect(w, r, "/scheduler", http.StatusSeeOther)
 }
@@ -248,4 +252,3 @@ func getLatestProbeTime(urls []models.TargetURL) time.Time {
 	}
 	return latest
 }
-

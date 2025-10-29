@@ -1,12 +1,10 @@
 {{define "title"}}Scheduler{{end}}
 
-{{define "head"}}
-<!-- Tidak ada <head> tambahan untuk halaman ini -->
-{{end}}
+{{define "head"}}{{end}}
 
 {{define "content"}}
 
-<!-- KARTU PENGATURAN SCHEDULER -->
+<!-- PENGATURAN SCHEDULER -->
 <div class="card">
     <h2 class="card-title">
         <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
@@ -30,25 +28,18 @@
     </form>
 </div>
 
-
-<!-- KARTU RIWAYAT PROBE TERBARU (YANG HILANG) -->
+<!-- RIWAYAT PEMBARUAN URL -->
 <div class="card">
     <h2 class="card-title">
         <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.98-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
         </svg>
-        Riwayat Probe Terbaru (50 Terakhir)
+        Riwayat Pembaruan URL
     </h2>
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>
-                        <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                        </svg>
-                        <span>Waktu</span>
-                    </th>
                     <th>
                         <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
@@ -57,30 +48,46 @@
                     </th>
                     <th>
                         <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM11 7h2v2h-2zm0 4h2v6h-2z"/>
+                        </svg>
+                        <span>Status</span>
+                    </th>
+                    <th>
+                        <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/>
                         </svg>
-                        <span>Latency (Last)</span>
+                        <span>Response Time</span>
+                    </th>
+                    <th>
+                        <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </svg>
+                        <span>Waktu Cek</span>
+                    </th>
+                    <th>
+                        <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                        <span>Keterangan</span>
                     </th>
                 </tr>
             </thead>
             <tbody>
                 {{range .HistoryData}}
                 <tr>
-                    <td class="date-time">{{.Timestamp.Format "2 Jan 15:04:05"}}</td>
                     <td>
-                        <!-- Kita cari URL berdasarkan ID -->
-                        {{$urlID := .URLID}}
-                        {{range $.URLs}}
-                            {{if eq .ID $urlID}}
-                                <a href="{{.URL}}" class="url-link" target="_blank">{{.URL}}</a>
-                            {{end}}
-                        {{end}}
+                        <a href="{{.URL}}" class="url-link" target="_blank">{{.URL}}</a>
+                    </td>
+                    <td>
+                        <span class="status-badge status-up">Up</span>
                     </td>
                     <td class="latency">{{.LatencyMs}} ms</td>
+                    <td class="date-time">{{.Timestamp.Format "2 Jan 15:04:05"}}</td>
+                    <td><span style="color: #4caf50;">Berhasil</span></td>
                 </tr>
                 {{else}}
                 <tr>
-                    <td colspan="3" style="text-align: center; color: #a0a0a0; padding: 20px;">
+                    <td colspan="5" class="empty-state">
                         Belum ada riwayat probe.
                     </td>
                 </tr>
@@ -89,5 +96,5 @@
         </table>
     </div>
 </div>
-{{end}}
 
+{{end}}
