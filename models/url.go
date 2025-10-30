@@ -3,8 +3,8 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"time"
 	"html/template"
+	"time"
 )
 
 type TargetURL struct {
@@ -43,9 +43,9 @@ type PageData struct {
 	HasNext          bool
 	PrevPage         int
 	NextPage         int
-    ChartRange         string // untuk dashboard chart range tab
-    NavigatorPages     []int  // nomor halaman yang ditampilkan di paginator
-    JSONHistoryData  template.JS // JSON encode dari HistoryData khusus dashboard
+	ChartRange       string
+	NavigatorPages   []int
+	JSONHistoryData  template.JS
 }
 
 // === FUNGSI HELPER UNTUK TEMPLATE ===

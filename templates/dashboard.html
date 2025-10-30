@@ -77,18 +77,14 @@
     </div>
 </div>
 
-{{end}}
-
-<style>
-.chart-range-btn {
-    background:#171c2e;color:#eee;border:none;padding:6px 12px;margin-left:2px;border-radius:16px;opacity:.7;font-size:13px;cursor:pointer;}
-.chart-range-btn.active {background:#25c17e;color:#fff;opacity:1;font-weight:bold;box-shadow:0 2px 12px 0 #25c17e22}
-.chart-range-group {display:flex;gap:2px;}
-</style>
-
 <script>
-           const historyData = {{.JSONHistoryData}};
-        if (historyData && historyData.length > 0) {
-            initChart(historyData);
-        }
-    </script>
+    console.log('DEBUG RAW:', {{.JSONHistoryData}});
+    const historyData = {{.JSONHistoryData}};
+    console.log('PARSED historyData:', historyData);
+    console.log('typeof:', typeof historyData);
+    if (historyData && historyData.length > 0) {
+        initChart(historyData);
+    }
+</script>
+
+{{end}}

@@ -117,7 +117,7 @@ func (h *Handlers) DashboardPage(w http.ResponseWriter, r *http.Request) {
 		GlobalUptimePct:  uptimePerc,
 	}
 
-	// Render template DASHBOARD (parse spesifik agar konten sesuai halaman)
+	// Render template DASHBOARD
 	tpl, perr := template.ParseFiles("templates/layout.html", "templates/dashboard.html")
 	if perr != nil {
 		log.Printf("Error parsing dashboard templates: %v", perr)
@@ -203,18 +203,14 @@ func (h *Handlers) SchedulerPage(w http.ResponseWriter, r *http.Request) {
 	var pages []int
 	start := 1
 	end := totalPages
-	// Paginasi: Slide window 10 halaman, current di tengah jika memungkinkan
 	if totalPages > 10 {
 		if pageNum <= 6 {
-			// di awal
 			start = 1
 			end = 10
 		} else if pageNum+4 >= totalPages {
-			// di akhir
 			start = totalPages - 9
 			end = totalPages
 		} else {
-			// tengah
 			start = pageNum - 5
 			end = pageNum + 4
 		}
@@ -235,7 +231,7 @@ func (h *Handlers) SchedulerPage(w http.ResponseWriter, r *http.Request) {
 		NavigatorPages:  pages,
 	}
 
-	// Render template SCHEDULER (parse spesifik agar konten sesuai halaman)
+	// Render template SCHEDULER
 	funcMap := template.FuncMap{
 		"add":      func(a, b int) int { return a + b },
 		"subtract": func(a, b int) int { return a - b },
@@ -326,7 +322,7 @@ func (h *Handlers) UpdateSettings(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/scheduler", http.StatusSeeOther)
 }
 
-// === FUNGSI HELPER ===
+// === FUNCTION HELPER ===
 
 // calculateGlobalAvgLatency menghitung rata-rata dari semua URL
 func calculateGlobalAvgLatency(urls []models.TargetURL) int64 {
