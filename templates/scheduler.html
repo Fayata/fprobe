@@ -21,7 +21,7 @@
         </select>
         <button type="submit" class="btn">
             <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
             </svg>
             Simpan Jadwal
         </button>
@@ -95,6 +95,36 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination" style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+        <div style="color:rgba(255,255,255,0.7);">
+            Page {{.PageNumber}} of {{.TotalPages}} • Total {{.TotalItems}} items
+        </div>
+        <div>
+            {{if gt .PageNumber 1}}
+                <a class="btn" href="/scheduler?page={{subtract .PageNumber 1}}&size={{.PageSize}}">Previous</a>
+            {{end}}
+            {{/* Ellipsis di depan */}}
+            {{if and (gt (index .NavigatorPages 0) 1) }}<span style="margin:0 6px;color:#888">...</span>{{end}}
+            {{range .NavigatorPages}}
+                {{if eq . $.PageNumber}}
+                    <span class="btn active" style="background:#25c17e;color:#fff;pointer-events:none;">{{.}}</span>
+                {{else}}
+                    <a class="btn" href="/scheduler?page={{.}}&size={{$.PageSize}}">{{.}}</a>
+                {{end}}
+            {{end}}
+            {{/* Ellipsis di belakang */}}
+            {{if and (gt .TotalPages 0) (lt (index .NavigatorPages (subtract (len .NavigatorPages) 1)) .TotalPages)}}<span style="margin:0 6px;color:#888">...</span>{{end}}
+            {{if lt .PageNumber .TotalPages}}
+                <a class="btn" href="/scheduler?page={{add .PageNumber 1}}&size={{.PageSize}}" style="margin-left:8px;">Next</a>
+            {{end}}
+        </div>
+    </div>
 </div>
 
 {{end}}
+
+<style>
+.btn.active {background:#25c17e;color:#fff;font-weight:bold;pointer-events:none;opacity:1;}
+</style>

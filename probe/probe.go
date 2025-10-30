@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// ProbeResult mendefinisikan data untuk hasil satu kali probe.
 type ProbeResult struct {
 	StatusCode  int
 	LatencyMs   int64

@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+	"html/template"
 )
 
-// TargetURL merepresentasikan satu URL yang akan kita probe
 type TargetURL struct {
 	ID              int
 	URL             string
@@ -21,7 +21,7 @@ type TargetURL struct {
 
 type ProbeHistory struct {
 	URLID     int
-	URL       string 
+	URL       string
 	LatencyMs int64
 	Timestamp time.Time
 }
@@ -31,9 +31,21 @@ type PageData struct {
 	URLs             []TargetURL
 	CurrentInterval  string
 	GlobalAvgLatency int64
+	GlobalUptimePct  int
 	LastCheckedTime  time.Time
 	HistoryData      []ProbeHistory
 	SelectedURLID    int
+	PageNumber       int
+	PageSize         int
+	TotalItems       int64
+	TotalPages       int
+	HasPrev          bool
+	HasNext          bool
+	PrevPage         int
+	NextPage         int
+    ChartRange         string // untuk dashboard chart range tab
+    NavigatorPages     []int  // nomor halaman yang ditampilkan di paginator
+    JSONHistoryData  template.JS // JSON encode dari HistoryData khusus dashboard
 }
 
 // === FUNGSI HELPER UNTUK TEMPLATE ===
@@ -70,4 +82,3 @@ func (tu *TargetURL) GetAverageLatency() string {
 	avg := tu.TotalLatencySum / tu.TotalProbeCount
 	return fmt.Sprintf("%d ms", avg)
 }
-

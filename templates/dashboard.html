@@ -12,7 +12,7 @@
             </svg>
             Total Uptime
         </div>
-        <div class="stat-value">99.9%</div>
+        <div class="stat-value">{{.GlobalUptimePct}}%</div>
     </div>
     
     <div class="stat-card">
@@ -41,10 +41,10 @@
         <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
             <path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/>
         </svg>
-        Grafik Response Time (30 Hari Terakhir)
+        Grafik Response Time
     </h2>
     
-    <form action="/" method="GET" class="input-group">
+    <form action="/" method="GET" class="input-group" style="display:flex;gap:8px;align-items:center;">
         <select name="url_id" onchange="this.form.submit()">
             {{if not .URLs}}
                 <option>Belum ada URL untuk ditampilkan</option>
@@ -56,6 +56,14 @@
                 {{end}}
             {{end}}
         </select>
+        <input type="hidden" name="range" id="chart_range_input" value="{{or $.ChartRange "1d"}}" />
+        <div class="chart-range-group">
+            <button type="button" class="chart-range-btn{{if eq (or $.ChartRange "1d") "1h"}} active{{end}}" onclick="document.getElementById('chart_range_input').value='1h'; this.form.submit();">1h</button>
+            <button type="button" class="chart-range-btn{{if eq (or $.ChartRange "1d") "4h"}} active{{end}}" onclick="document.getElementById('chart_range_input').value='4h'; this.form.submit();">4h</button>
+            <button type="button" class="chart-range-btn{{if or (eq (or $.ChartRange "1d") "1d") (not $.ChartRange)}} active{{end}}" onclick="document.getElementById('chart_range_input').value='1d'; this.form.submit();">1d</button>
+            <button type="button" class="chart-range-btn{{if eq (or $.ChartRange "1d") "1w"}} active{{end}}" onclick="document.getElementById('chart_range_input').value='1w'; this.form.submit();">1w</button>
+            <button type="button" class="chart-range-btn{{if eq (or $.ChartRange "1d") "1m"}} active{{end}}" onclick="document.getElementById('chart_range_input').value='1m'; this.form.submit();">1m</button>
+        </div>
         <button type="submit" class="btn">
             <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
@@ -70,3 +78,17 @@
 </div>
 
 {{end}}
+
+<style>
+.chart-range-btn {
+    background:#171c2e;color:#eee;border:none;padding:6px 12px;margin-left:2px;border-radius:16px;opacity:.7;font-size:13px;cursor:pointer;}
+.chart-range-btn.active {background:#25c17e;color:#fff;opacity:1;font-weight:bold;box-shadow:0 2px 12px 0 #25c17e22}
+.chart-range-group {display:flex;gap:2px;}
+</style>
+
+<script>
+           const historyData = {{.JSONHistoryData}};
+        if (historyData && historyData.length > 0) {
+            initChart(historyData);
+        }
+    </script>

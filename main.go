@@ -12,13 +12,16 @@ import (
 )
 
 func main() {
-	// 1. Inisialisasi Database
+	// Inisialisasi Database
 	store := database.NewStore("probe.db")
 	log.Println("Database terhubung dan tabel siap.")
 
-	// 2. Muat SEMUA Template HTML dengan ParseGlob
-	// PENTING: Hapus file templates/index.html jika masih ada!
-	tpl, err := template.ParseGlob("templates/*.html")
+	// Muat SEMUA Template HTML dengan ParseGlob
+	tpl, err := template.ParseFiles(
+		"templates/layout.html",
+		"templates/dashboard.html",
+		"templates/urls.html",
+	)
 	if err != nil {
 		log.Fatalf("Gagal memuat template (ParseGlob): %v", err)
 	}
@@ -29,22 +32,22 @@ func main() {
 		log.Printf("  - %s", t.Name())
 	}
 
-	// 3. Ambil interval awal dari DB
+	// Ambil interval awal dari DB
 	initialInterval, err := store.GetScheduleInterval()
 	if err != nil {
 		log.Fatalf("Gagal mengambil interval awal: %v", err)
 	}
 
-	// 4. Buat struct 'app'
+	// Buat struct 'app'
 	app := &handler.Application{
 		Store:     store,
 		Templates: tpl,
 	}
 
-	// 5. Mulai Scheduler dan simpan state-nya ke 'app'
+	// Mulai Scheduler dan simpan state-nya ke 'app'
 	app.Scheduler, app.JobID = scheduler.StartScheduler(initialInterval, app.Store)
 
-	// 6. Setup Handlers
+	// Setup Handlers
 	h := handler.NewHandlers(app)
 	r := mux.NewRouter()
 
@@ -62,7 +65,6 @@ func main() {
 	fs := http.FileServer(http.Dir("./static/"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
-	// 7. Jalankan Web Server
 	port := ":8080"
 	log.Printf("Server berjalan di http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, r))

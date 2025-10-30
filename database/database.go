@@ -3,18 +3,16 @@ package database
 import (
 	"database/sql"
 	"log"
-	"test/models" // Ganti 'test' jika nama modul Anda berbeda
+	"test/models"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3" // Driver SQLite
+	_ "github.com/mattn/go-sqlite3" 
 )
 
-// Store menampung koneksi database
 type Store struct {
 	Db *sql.DB
 }
 
-// NewStore membuat koneksi dan store DB baru
 func NewStore(dbPath string) *Store {
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
@@ -189,13 +187,68 @@ func (s *Store) GetProbeHistory(urlID int, limit int) ([]models.ProbeHistory, er
 
 // GetAllProbeHistory mengambil N probe terakhir dari SEMUA URL (untuk Scheduler)
 func (s *Store) GetAllProbeHistory(limit int) ([]models.ProbeHistory, error) {
-	// Fungsi BARU: Menggunakan JOIN
+    rows, err := s.Db.Query(`
+        SELECT h.url_id, u.url, h.latency_ms, h.timestamp 
+        FROM probe_history h
+        JOIN urls u ON h.url_id = u.id
+        ORDER BY h.timestamp DESC 
+        LIMIT ?`, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var history []models.ProbeHistory
+	for rows.Next() {
+		var h models.ProbeHistory
+		if err := rows.Scan(&h.URLID, &h.URL, &h.LatencyMs, &h.Timestamp); err != nil {
+			return nil, err
+		}
+		history = append(history, h)
+	}
+	return history, nil
+}
+
+// GetAllProbeHistoryPaged mengambil probe_history dengan limit dan offset (untuk pagination)
+func (s *Store) GetAllProbeHistoryPaged(limit int, offset int) ([]models.ProbeHistory, error) {
+    rows, err := s.Db.Query(`
+        SELECT h.url_id, u.url, h.latency_ms, h.timestamp
+        FROM probe_history h
+        JOIN urls u ON h.url_id = u.id
+        ORDER BY h.timestamp DESC
+        LIMIT ? OFFSET ?`, limit, offset)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var history []models.ProbeHistory
+    for rows.Next() {
+        var h models.ProbeHistory
+        if err := rows.Scan(&h.URLID, &h.URL, &h.LatencyMs, &h.Timestamp); err != nil {
+            return nil, err
+        }
+        history = append(history, h)
+    }
+    return history, nil
+}
+
+// CountProbeHistory menghitung total baris probe_history
+func (s *Store) CountProbeHistory() (int64, error) {
+    var total int64
+    err := s.Db.QueryRow(`SELECT COUNT(1) FROM probe_history`).Scan(&total)
+    return total, err
+}
+
+// GetProbeHistoryByRange mengambil probe untuk SATU URL dalam interval waktu tertentu (ASC)
+func (s *Store) GetProbeHistoryByRange(urlID int, since time.Time) ([]models.ProbeHistory, error) {
 	rows, err := s.Db.Query(`
 		SELECT h.url_id, u.url, h.latency_ms, h.timestamp 
 		FROM probe_history h
 		JOIN urls u ON h.url_id = u.id
-		ORDER BY h.timestamp DESC 
-		LIMIT ?`, limit)
+		WHERE h.url_id = ? AND h.timestamp >= ?
+		ORDER BY h.timestamp ASC
+	`, urlID, since)
 	if err != nil {
 		return nil, err
 	}
