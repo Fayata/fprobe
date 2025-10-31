@@ -151,7 +151,7 @@ id-probe-status/
 ### Step 4: Build Application
 
 ```bash
-go build -o id-probe
+go build -o fprobe
 ```
 
 Atau untuk development (tanpa build):
