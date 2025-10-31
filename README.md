@@ -1,5 +1,3 @@
-## 📸 Screenshots
-
 ### Dashboard
 Dashboard menampilkan statistik uptime, jumlah URL aktif, rata-rata response time, dan grafik performa 30 hari terakhir.
 
