@@ -163,7 +163,7 @@ go run main.go
 
 ```bash
 # Jika sudah build:
-./id-probe
+./fprobe
 
 # Atau langsung run:
 go run main.go
