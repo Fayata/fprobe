@@ -102,7 +102,7 @@ gcc --version
 
 ```bash
 git clone https://github.com/fayata/fprobe.git
-cd id-probe-status
+cd fprobe
 ```
 
 ### Step 2: Install Dependencies
