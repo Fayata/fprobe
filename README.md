@@ -1,9 +1,3 @@
-# ID Probe Status - Website Uptime Monitoring
-
-![ID Probe Status](static/logo.png)
-
-Aplikasi monitoring uptime untuk memantau status dan performa website secara real-time dengan interface yang modern dan responsif.
-
 ## 📸 Screenshots
 
 ### Dashboard
