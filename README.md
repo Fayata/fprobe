@@ -101,7 +101,7 @@ gcc --version
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/username/id-probe-status.git
+git clone https://github.com/fayata/fprobe.git
 cd id-probe-status
 ```
 
@@ -317,69 +317,6 @@ rm probe.db
 go run main.go
 ```
 
-### Logo tidak tampil
-**Solution**:
-```bash
-# Pastikan logo.png ada di folder static:
-ls static/logo.png
-
-# Jika tidak ada, download atau tambahkan file logo.png
-```
-
-## 🚀 Deployment
-
-### Deploy ke Railway.app (Recommended - Gratis)
-
-1. **Push ke GitHub**:
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/username/id-probe-status.git
-git push -u origin main
-```
-
-2. **Deploy di Railway**:
-- Buka https://railway.app
-- Login dengan GitHub
-- Click "New Project" → "Deploy from GitHub repo"
-- Pilih repository Anda
-- Railway auto-detect Go dan deploy!
-
-3. **Get Public URL**:
-- Di Railway dashboard → Settings → Generate Domain
-- Aplikasi Anda live di `https://your-app.railway.app`
-
-### Deploy ke Render.com
-
-1. **Tambahkan `render.yaml`**:
-```yaml
-services:
-  - type: web
-    name: id-probe-status
-    env: go
-    buildCommand: go build -o main
-    startCommand: ./main
-```
-
-2. **Deploy**:
-- Daftar di https://render.com
-- New → Web Service
-- Connect GitHub repo
-- Deploy!
-
-### Deploy ke Fly.io
-
-```bash
-# Install Fly CLI
-curl -L https://fly.io/install.sh | sh
-
-# Login & Deploy
-fly auth login
-fly launch
-fly deploy
-```
-
 ## 📊 Database Schema
 
 ### Table: `urls`
@@ -434,7 +371,6 @@ This project is licensed under the MIT License.
 - [go-sqlite3](https://github.com/mattn/go-sqlite3) - SQLite driver
 - [robfig/cron](https://github.com/robfig/cron) - Cron scheduler
 - [Chart.js](https://www.chartjs.org/) - Chart library
-- Logo design by [Awan Teknologi Inovasi](https://awanteknologiinovasi.com)
 
 ## 📞 Support
 
