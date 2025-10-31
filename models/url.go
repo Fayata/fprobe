@@ -60,16 +60,16 @@ func (tu *TargetURL) GetUptime() string {
 	minutes := int(duration.Minutes()) % 60
 
 	if days > 0 {
-		return fmt.Sprintf("%d hari, %d jam", days, hours)
+		return fmt.Sprintf("%d day, %d hour", days, hours)
 	}
 	if hours > 0 {
-		return fmt.Sprintf("%d jam, %d mnt", hours, minutes)
+		return fmt.Sprintf("%d hour, %d minute", hours, minutes)
 	}
 	if minutes > 0 {
-		return fmt.Sprintf("%d mnt", minutes)
+		return fmt.Sprintf("%d minute", minutes)
 	}
 	if duration.Seconds() < 60 {
-		return "Baru saja"
+		return "Just now"
 	}
 	return "N/A"
 }

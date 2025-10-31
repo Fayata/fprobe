@@ -14,16 +14,16 @@
     </h2>
     <form action="/settings" method="POST" class="input-group">
         <select name="interval">
-            <option value="@every 1m" {{if eq .CurrentInterval "@every 1m"}}selected{{end}}>Setiap 1 Menit (Testing)</option>
-            <option value="@every 5m" {{if eq .CurrentInterval "@every 5m"}}selected{{end}}>Setiap 5 Menit</option>
-            <option value="@every 10m" {{if eq .CurrentInterval "@every 10m"}}selected{{end}}>Setiap 10 Menit</option>
-            <option value="@every 30m" {{if eq .CurrentInterval "@every 30m"}}selected{{end}}>Setiap 30 Menit</option>
+            <option value="@every 1m" {{if eq .CurrentInterval "@every 1m"}}selected{{end}}>Every 1 Minutes (Testing)</option>
+            <option value="@every 5m" {{if eq .CurrentInterval "@every 5m"}}selected{{end}}>Every 5 Minutes</option>
+            <option value="@every 10m" {{if eq .CurrentInterval "@every 10m"}}selected{{end}}>Every 10 Minutes</option>
+            <option value="@every 30m" {{if eq .CurrentInterval "@every 30m"}}selected{{end}}>Every 30 Minutes</option>
         </select>
         <button type="submit" class="btn">
             <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
             </svg>
-            Simpan Jadwal
+            Save Settings
         </button>
     </form>
 </div>
@@ -34,7 +34,7 @@
         <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
             <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
         </svg>
-        Riwayat Pembaruan URL
+        URL Histories
     </h2>
     <div class="table-wrapper">
         <table>
@@ -62,13 +62,13 @@
                         <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
                         </svg>
-                        <span>Waktu Cek</span>
+                        <span>Check Time</span>
                     </th>
                     <th>
                         <svg class="icon" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
                         </svg>
-                        <span>Keterangan</span>
+                        <span>Description</span>
                     </th>
                 </tr>
             </thead>
@@ -83,12 +83,12 @@
                     </td>
                     <td class="latency">{{.LatencyMs}} ms</td>
                     <td class="date-time">{{.Timestamp.Format "2 Jan 15:04:05"}}</td>
-                    <td><span style="color: #4caf50;">Berhasil</span></td>
+                    <td><span style="color: #4caf50;">Succeed</span></td>
                 </tr>
                 {{else}}
                 <tr>
                     <td colspan="5" class="empty-state">
-                        Belum ada riwayat probe.
+                        No history data available.
                     </td>
                 </tr>
                 {{end}}

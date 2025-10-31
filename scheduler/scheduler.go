@@ -13,15 +13,15 @@ import (
 // CreateJob adalah fungsi yang mengembalikan fungsi job
 func CreateJob(store *database.Store) func() {
 	return func() {
-		log.Println("[CRON] Memulai probe...")
+		log.Println("[CRON] Starting probe...")
 		urls, err := store.GetAllURLs()
 		if err != nil {
-			log.Printf("[CRON] Gagal mengambil URL: %v\n", err)
+			log.Printf("[CRON] Failed to retrieve URLs: %v\n", err)
 			return
 		}
 
 		if len(urls) == 0 {
-			log.Println("[CRON] Tidak ada URL untuk di-probe.")
+			log.Println("[CRON] No URLs to probe.")
 			return
 		}
 
@@ -50,21 +50,21 @@ func CreateJob(store *database.Store) func() {
 			}
 
 			if err != nil {
-				log.Printf("[CRON] Gagal update DB untuk %s: %v\n", u.URL, err)
+				log.Printf("[CRON] Failed to update DB for %s: %v\n", u.URL, err)
 			} else {
 				log.Printf("[CRON] Probe %s -> Status: %d, Latency: %dms\n", u.URL, result.StatusCode, result.LatencyMs)
 			}
 		}
-		log.Println("[CRON] Probe selesai.")
+		log.Println("[CRON] Probe finished.")
 	}
 }
 
-// StartScheduler memulai cron job
+// StartScheduler starts the cron job
 func StartScheduler(interval string, store *database.Store) (*cron.Cron, cron.EntryID) {
-	log.Printf("Menjalankan scheduler (setiap %s)...", interval)
+	log.Printf("Starting scheduler (every %s)...", interval)
 	c := cron.New()
 
-	// Gunakan 'interval' dari argumen
+	// Use the 'interval' from the arguments
 	id, _ := c.AddFunc(interval, CreateJob(store))
 	c.Start()
 

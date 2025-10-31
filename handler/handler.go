@@ -299,23 +299,23 @@ func (h *Handlers) UpdateSettings(w http.ResponseWriter, r *http.Request) {
 		"@every 30m": true,
 	}
 	if !validIntervals[interval] {
-		log.Println("Percobaan input interval tidak valid:", interval)
+		log.Println("Input test", interval)
 		http.Redirect(w, r, "/scheduler", http.StatusSeeOther)
 		return
 	}
 	err := h.App.Store.SetScheduleInterval(interval)
 	if err != nil {
-		log.Println("Gagal menyimpan interval:", err)
+		log.Println("Failed to save interval:", err)
 		http.Redirect(w, r, "/scheduler", http.StatusSeeOther)
 		return
 	}
 
 	// Restart Cron Job
-	log.Printf("Mengubah jadwal scheduler ke: %s", interval)
+	log.Printf("Changing scheduler interval to: %s", interval)
 	h.App.Scheduler.Remove(h.App.JobID)
 	newID, err := h.App.Scheduler.AddFunc(interval, scheduler.CreateJob(h.App.Store))
 	if err != nil {
-		log.Println("Gagal menambah job cron baru:", err)
+		log.Println("Failed to add new cron job:", err)
 	}
 	h.App.JobID = newID
 
